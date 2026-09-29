@@ -1,1 +1,140 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>31 Lanterns</title><meta http-equiv="refresh" content="0;url=./app.html"></head><body><p>Loading calendar…</p></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>31 Lanterns — The October File</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff8ec;--ink:#241610;--muted:#7a5a4a;--red:#8a341c;--gold:#c4843a;--night:#1b1412}
+*{box-sizing:border-box}html,body{margin:0;background:var(--night);color:var(--ink);font-family:Manrope,system-ui,sans-serif}
+.wrap{width:min(1100px,calc(100% - 28px));margin:28px auto 40px}
+.hero,.board,footer{background:linear-gradient(180deg,#fffaf2,var(--paper));border-radius:28px;box-shadow:0 24px 50px rgba(0,0,0,.28)}
+.hero{text-align:center;padding:40px 28px 22px;position:relative}
+.hero::before{content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:84px;height:16px;background:#d7c4a6;border-radius:3px}
+.pill{display:inline-block;border:1px solid rgba(138,52,28,.22);background:#fff6ea;color:var(--red);font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;border-radius:999px}
+h1{font-family:Fraunces,Georgia,serif;font-size:clamp(36px,6vw,62px);line-height:.95;margin:14px 0 8px}
+h1 span{color:var(--red);display:block}
+.hero p{max-width:640px;margin:0 auto 16px;color:#5c4034;line-height:1.55}
+.status{background:#f7ead8;border-radius:16px;padding:12px 14px;display:grid;gap:8px}
+.row{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+.bar{height:8px;background:#ead9c4;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--red))}
+.board{margin-top:16px;padding:28px 22px 32px}
+.heading{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:18px}
+.kicker{margin:0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--muted)}
+h2{font-family:Fraunces,Georgia,serif;margin:4px 0 0;font-size:30px}
+.note{color:var(--muted);font-size:13px;max-width:220px;text-align:right}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{position:relative;border:0;background:#fffaf2;border-radius:20px;min-height:250px;padding:12px;text-align:left;cursor:pointer;box-shadow:0 10px 24px rgba(72,40,24,.08)}
+.card::before{content:"";position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:42px;height:11px;background:#d9c7ab;border-radius:2px}
+.badge{position:absolute;z-index:2;top:12px;left:12px;width:54px;height:54px;border-radius:16px;background:#fff9ef;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(133,87,61,.16)}
+.unlocked .badge{background:var(--red);color:#fff}
+.badge b{font-family:Fraunces,Georgia,serif;font-size:26px;line-height:.85}
+.badge span{font-size:9px;letter-spacing:.1em;font-weight:800}
+.art{height:150px;margin-top:8px;border-radius:14px;background:radial-gradient(circle at 30% 28%, rgba(255,214,140,.95), transparent 30%),radial-gradient(circle at 72% 78%, rgba(138,52,28,.32), transparent 42%),linear-gradient(160deg,#c4843a,#8a341c 55%,#3b2433)}
+.locked .art{filter:grayscale(1) brightness(.86)}
+.meta{display:flex;justify-content:space-between;align-items:end;gap:8px;margin-top:10px}
+.week{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.title{font-family:Fraunces,Georgia,serif;font-size:16px;margin-top:3px}
+.go{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#f3e0cc;font-weight:800}
+.today{outline:3px solid #e8b15a}
+.lit .go{background:#3c6b3c;color:#fff}
+footer{margin-top:16px;padding:16px 18px;display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;color:var(--muted)}
+button.ghost{border:1px solid rgba(138,52,28,.2);background:#fff6ea;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer}
+.modal{position:fixed;inset:0;background:rgba(20,10,8,.62);display:none;align-items:end;justify-content:center;z-index:20;padding:18px}
+.modal.open{display:flex}
+.sheet{width:min(720px,100%);background:var(--paper);border-radius:24px;padding:22px;max-height:86vh;overflow:auto}
+.prompt{background:#fffaf2;border-radius:16px;padding:14px;margin:10px 0}
+.prompt b{display:block;color:var(--red);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actions button{border:0;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
+#lightBtn{background:var(--red);color:#fff}
+@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}.hero,.board{padding:22px 16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="pill">THE OCTOBER FILE · 2026</div>
+    <h1>31 Lanterns<span>The October File</span></h1>
+    <p>Каждый день в <strong>10:00 по Москве</strong> открывается одно окно. До своей даты оно серое — так и должно быть.</p>
+    <div class="status">
+      <div class="row"><span id="progressText">Открыто 0 из 31</span><strong id="nextUnlock">Следующий — 1 октября, 10:00 МСК</strong></div>
+      <div class="bar"><span id="progressBar"></span></div>
+    </div>
+  </section>
+  <section class="board">
+    <div class="heading">
+      <div><p class="kicker">1–31 октября</p><h2>Зажги фонарь</h2></div>
+      <p class="note">Закрытые окна серые. Зажжённый фонарь запоминается на этом устройстве.</p>
+    </div>
+    <div class="grid" id="calendarGrid"></div>
+  </section>
+  <footer>
+    <div>31 Lanterns · ученик — детектив ночной смены</div>
+    <button class="ghost" id="teacherBtn" type="button">Режим учителя</button>
+  </footer>
+</div>
+<div class="modal" id="modal">
+  <div class="sheet">
+    <p class="kicker" id="modalEyebrow">Окно</p>
+    <h2><span id="modalDate"></span> · <span id="modalTitle"></span></h2>
+    <div id="promptList"></div>
+    <div class="actions">
+      <button id="lightBtn" type="button">Зажечь фонарь</button>
+      <button class="ghost" id="closeBtn" type="button">Закрыть</button>
+    </div>
+  </div>
+</div>
+<script src="days.js"></script>
+<script>
+const YEAR=2026, MOSCOW_OFFSET="+03:00", MONTH_LABEL="окт";
+const LS_LIT="october-file-lit-2026", LS_TEACHER="october-file-teacher-2026-off";
+const WEEKDAYS={1:"четверг",2:"пятница",3:"суббота",4:"воскресенье",5:"понедельник",6:"вторник",7:"среда",8:"четверг",9:"пятница",10:"суббота",11:"воскресенье",12:"понедельник",13:"вторник",14:"среда",15:"четверг",16:"пятница",17:"суббота",18:"воскресенье",19:"понедельник",20:"вторник",21:"среда",22:"четверг",23:"пятница",24:"суббота",25:"воскресенье",26:"понедельник",27:"вторник",28:"среда",29:"четверг",30:"пятница",31:"суббота"};
+const grid=document.getElementById("calendarGrid");
+const modal=document.getElementById("modal");
+let activeDay=null;
+function teacherMode(){return localStorage.getItem(LS_TEACHER)==="1"}
+function setTeacher(on){localStorage.setItem(LS_TEACHER,on?"1":"0");render()}
+function litSet(){try{return new Set(JSON.parse(localStorage.getItem(LS_LIT)||"[]"))}catch{return new Set()}}
+function saveLit(set){localStorage.setItem(LS_LIT,JSON.stringify([...set]))}
+function unlockTime(day){return new Date(`${YEAR}-10-${String(day).padStart(2,"0")}T10:00:00${MOSCOW_OFFSET}`).getTime()}
+function isUnlocked(day){return teacherMode()||Date.now()>=unlockTime(day)}
+function moscowParts(){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Moscow",year:"numeric",month:"2-digit",day:"2-digit",hour12:false}).formatToParts(new Date());return Object.fromEntries(p.map(x=>[x.type,x.value]))}
+function isToday(day){const p=moscowParts();return p.year===String(YEAR)&&p.month==="10"&&Number(p.day)===day}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
+function render(){
+  const lit=litSet(); grid.innerHTML="";
+  DAYS.forEach(item=>{
+    const unlocked=isUnlocked(item.day);
+    const card=document.createElement("button");
+    card.type="button";
+    card.className=`card ${unlocked?"unlocked":"locked"}${isToday(item.day)?" today":""}${lit.has(item.day)?" lit":""}`;
+    card.innerHTML=`<div class="badge"><b>${item.day}</b><span>${MONTH_LABEL}</span></div><div class="art"></div><div class="meta"><div><div class="week">${WEEKDAYS[item.day]}</div><div class="title">${unlocked?esc(item.theme):"Скоро откроется"}</div></div><div class="go">${lit.has(item.day)?"✓":(unlocked?"→":"●")}</div></div>`;
+    card.onclick=()=>{if(unlocked) openModal(item);};
+    grid.appendChild(card);
+  });
+  const unlocked=DAYS.filter(d=>isUnlocked(d.day)).length;
+  document.getElementById("progressText").textContent=teacherMode()?`Режим учителя: все 31 окно открыты · зажжено ${litSet().size}`:`Открыто ${unlocked} из 31 · зажжено ${litSet().size}`;
+  document.getElementById("progressBar").style.width=`${unlocked/31*100}%`;
+  const next=DAYS.find(d=>!isUnlocked(d.day));
+  document.getElementById("nextUnlock").textContent=next?`Следующий — ${next.day} октября, 10:00 МСК`:"Все фонари уже доступны";
+  document.getElementById("teacherBtn").textContent=teacherMode()?"Закрыть режим учителя":"Режим учителя";
+}
+function openModal(item){
+  activeDay=item;
+  document.getElementById("modalDate").textContent=item.day;
+  document.getElementById("modalTitle").textContent=item.theme;
+  document.getElementById("modalEyebrow").textContent=item.eyebrow;
+  document.getElementById("promptList").innerHTML=item.items.map(([k,t,x])=>`<article class="prompt"><b>${esc(k)}</b><h3>${esc(t)}</h3><p>${esc(x)}</p></article>`).join("");
+  document.getElementById("lightBtn").textContent=litSet().has(item.day)?"Фонарь уже горит ✓":"Зажечь фонарь";
+  modal.classList.add("open");
+}
+document.getElementById("closeBtn").onclick=()=>modal.classList.remove("open");
+modal.onclick=e=>{if(e.target===modal)modal.classList.remove("open")};
+document.getElementById("lightBtn").onclick=()=>{if(!activeDay)return;const s=litSet();s.add(activeDay.day);saveLit(s);render();openModal(activeDay)};
+document.getElementById("teacherBtn").onclick=()=>setTeacher(!teacherMode());
+render();
+</script>
+</body></html>
