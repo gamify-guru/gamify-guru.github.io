@@ -32,8 +32,9 @@ h2{font-family:Fraunces,Georgia,serif;margin:4px 0 0;font-size:30px}
 .unlocked .badge{background:var(--red);color:#fff}
 .badge b{font-family:Fraunces,Georgia,serif;font-size:26px;line-height:.85}
 .badge span{font-size:9px;letter-spacing:.1em;font-weight:800}
-.art{height:150px;margin-top:8px;border-radius:14px;background:radial-gradient(circle at 30% 28%, rgba(255,214,140,.95), transparent 30%),radial-gradient(circle at 72% 78%, rgba(138,52,28,.32), transparent 42%),linear-gradient(160deg,#c4843a,#8a341c 55%,#3b2433)}
-.locked .art{filter:grayscale(1) brightness(.86)}
+.art{height:150px;margin-top:8px;border-radius:14px;overflow:hidden;background:#ead3b8;position:relative}
+.art img{width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block}
+.locked .art img{filter:grayscale(.35) brightness(.92);opacity:.9}
 .meta{display:flex;justify-content:space-between;align-items:end;gap:8px;margin-top:10px}
 .week{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800}
 .title{font-family:Fraunces,Georgia,serif;font-size:16px;margin-top:3px}
@@ -58,7 +59,7 @@ button.ghost{border:1px solid rgba(138,52,28,.2);background:#fff6ea;border-radiu
   <section class="hero">
     <div class="pill">THE OCTOBER FILE · 2026</div>
     <h1>31 Lanterns<span>The October File</span></h1>
-    <p>Каждый день в <strong>10:00 по Москве</strong> открывается одно окно. До своей даты оно серое — так и должно быть.</p>
+    <p>Каждый день в <strong>10:00 по Москве</strong> открывается одно окно. До своей даты оно бледнее — так и должно быть.</p>
     <div class="status">
       <div class="row"><span id="progressText">Открыто 0 из 31</span><strong id="nextUnlock">Следующий — 1 октября, 10:00 МСК</strong></div>
       <div class="bar"><span id="progressBar"></span></div>
@@ -67,7 +68,7 @@ button.ghost{border:1px solid rgba(138,52,28,.2);background:#fff6ea;border-radiu
   <section class="board">
     <div class="heading">
       <div><p class="kicker">1–31 октября</p><h2>Зажги фонарь</h2></div>
-      <p class="note">Закрытые окна серые. Зажжённый фонарь запоминается на этом устройстве.</p>
+      <p class="note">Закрытые окна бледнее. Зажжённый фонарь запоминается на этом устройстве.</p>
     </div>
     <div class="grid" id="calendarGrid"></div>
   </section>
@@ -90,6 +91,7 @@ button.ghost{border:1px solid rgba(138,52,28,.2);background:#fff6ea;border-radiu
 <script src="days.js"></script>
 <script>
 const YEAR=2026, MOSCOW_OFFSET="+03:00", MONTH_LABEL="окт";
+const IMG="https://cdn.jsdelivr.net/gh/gamify-guru/october-file@main/";
 const LS_LIT="october-file-lit-2026", LS_TEACHER="october-file-teacher-2026-off";
 const WEEKDAYS={1:"четверг",2:"пятница",3:"суббота",4:"воскресенье",5:"понедельник",6:"вторник",7:"среда",8:"четверг",9:"пятница",10:"суббота",11:"воскресенье",12:"понедельник",13:"вторник",14:"среда",15:"четверг",16:"пятница",17:"суббота",18:"воскресенье",19:"понедельник",20:"вторник",21:"среда",22:"четверг",23:"пятница",24:"суббота",25:"воскресенье",26:"понедельник",27:"вторник",28:"среда",29:"четверг",30:"пятница",31:"суббота"};
 const grid=document.getElementById("calendarGrid");
@@ -103,7 +105,11 @@ function unlockTime(day){return new Date(`${YEAR}-10-${String(day).padStart(2,"0
 function isUnlocked(day){return teacherMode()||Date.now()>=unlockTime(day)}
 function moscowParts(){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Moscow",year:"numeric",month:"2-digit",day:"2-digit",hour12:false}).formatToParts(new Date());return Object.fromEntries(p.map(x=>[x.type,x.value]))}
 function isToday(day){const p=moscowParts();return p.year===String(YEAR)&&p.month==="10"&&Number(p.day)===day}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">","\"":""","'":"&#039;"}[c]))}
+function artBlock(day){
+  const n=String(day).padStart(2,"0");
+  return `<img src="${IMG}${n}.jpg" alt="" loading="lazy">`;
+}
 function render(){
   const lit=litSet(); grid.innerHTML="";
   DAYS.forEach(item=>{
@@ -111,7 +117,7 @@ function render(){
     const card=document.createElement("button");
     card.type="button";
     card.className=`card ${unlocked?"unlocked":"locked"}${isToday(item.day)?" today":""}${lit.has(item.day)?" lit":""}`;
-    card.innerHTML=`<div class="badge"><b>${item.day}</b><span>${MONTH_LABEL}</span></div><div class="art"></div><div class="meta"><div><div class="week">${WEEKDAYS[item.day]}</div><div class="title">${unlocked?esc(item.theme):"Скоро откроется"}</div></div><div class="go">${lit.has(item.day)?"✓":(unlocked?"→":"●")}</div></div>`;
+    card.innerHTML=`<div class="badge"><b>${item.day}</b><span>${MONTH_LABEL}</span></div><div class="art">${artBlock(item.day)}</div><div class="meta"><div><div class="week">${WEEKDAYS[item.day]}</div><div class="title">${unlocked?esc(item.theme):"Скоро откроется"}</div></div><div class="go">${lit.has(item.day)?"✓":(unlocked?"→":"●")}</div></div>`;
     card.onclick=()=>{if(unlocked) openModal(item);};
     grid.appendChild(card);
   });
