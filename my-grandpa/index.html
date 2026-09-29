@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Grandpa - Family Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Caslon+Display&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2a2118;--muted:#7a6a58;--paper:#f7efe4;--gold:#c4a15a;--brown:#6b4a2b}
+*{box-sizing:border-box}html,body{margin:0;background:#1c1612;color:var(--ink);font-family:"DM Sans",system-ui,sans-serif}
+.wrap{width:min(1120px,calc(100% - 24px));margin:18px auto 36px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#f3e6d4;margin-bottom:12px;flex-wrap:wrap}
+.brand{display:flex;gap:10px;align-items:center}
+.logo{width:42px;height:42px;border-radius:50%;background:#c4a15a;color:#2a2118;display:grid;place-items:center;font-weight:800}
+.tabs{display:flex;gap:8px}
+.tabs button,.ghost{border:0;border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer}
+.tabs .on{background:#c4a15a;color:#2a2118}
+.tabs .off,.ghost{background:#3a2f26;color:#f3e6d4}
+.hero,.panel{background:var(--paper);border-radius:24px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.28)}
+.hero{position:relative;min-height:420px;color:#fff}
+.hero img{width:100%;height:420px;object-fit:cover;display:block}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,14,10,.78) 8%,rgba(20,14,10,.18) 58%,transparent)}
+.hero .copy{position:absolute;left:28px;bottom:28px;right:28px;max-width:460px}
+.kicker{letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:700;color:#e8d3a4}
+h1{font-family:"Libre Caslon Display",Georgia,serif;font-size:clamp(40px,8vw,72px);margin:6px 0 4px;line-height:.9;font-weight:400}
+h2{font-family:"Libre Caslon Display",Georgia,serif;font-weight:400;margin:0 0 8px}
+.start{margin-top:14px;border:0;background:#c4a15a;color:#2a2118;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer}
+.panel{padding:22px}
+.stagebar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.stagebar button{border:0;background:#eadcc8;border-radius:12px;padding:8px 10px;cursor:pointer;font-size:12px;font-weight:700}
+.stagebar .on{background:#6b4a2b;color:#fff}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.pic{border-radius:18px;overflow:hidden;background:#2a2118}
+.pic img{width:100%;height:320px;object-fit:cover;display:block}
+.task p{color:var(--muted);line-height:1.5}
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.choices button,.pair button{border:0;background:#fff;border-radius:999px;padding:10px 14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(80,50,20,.08)}
+.choices .ok{background:#3d6b3c;color:#fff}
+.choices .bad{background:#8a341c;color:#fff}
+.feedback{min-height:24px;margin-top:10px;font-weight:700}
+.progress{height:8px;background:#eadcc8;border-radius:99px;overflow:hidden;margin:10px 0 16px}
+.progress span{display:block;height:100%;background:#c4a15a;width:0}
+.bank{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input[type=text]{width:100%;border:1px solid #e0d0bc;border-radius:12px;padding:10px 12px;font:inherit}
+.saved{background:#fff;border-radius:12px;padding:8px 10px;margin-top:6px}
+footer{display:flex;justify-content:space-between;gap:10px;align-items:center;color:#d9c8b2;margin-top:14px;font-size:13px}
+.hidden{display:none}
+@media(max-width:800px){.grid,.pair,.bank{grid-template-columns:1fr}.hero img,.pic img{height:240px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><div class="logo">AS</div><div><strong>MY GRANDPA</strong><div style="opacity:.75">Family Archive</div></div></div>
+    <div class="tabs">
+      <button id="tabLesson" class="on">Lesson</button>
+      <button id="tabHomework" class="off">Homework</button>
+      <button id="teacherBtn" class="off">Teacher</button>
+    </div>
+  </div>
+  <section class="hero" id="cover">
+    <img src="https://01a0edee-8d76-7aa1-a029-544c8e5016f7.arena.site/images/grandpa-family-band.jpg" alt="Grandpa and the family band">
+    <div class="shade"></div>
+    <div class="copy">
+      <div class="kicker">Academy Stars 3 - Unit 5 - Lesson 1</div>
+      <h1>My Grandpa</h1>
+      <p style="font-family:'Libre Caslon Display',Georgia,serif;font-size:28px;margin:0 0 8px">Grandpa's Lost Band</p>
+      <p>The family band is lost in the album.<br>Find the people and the instruments.</p>
+      <button class="start" id="startBtn">Open Grandpa's album</button>
+      <p style="opacity:.8">You are the Family Archive Detective.</p>
+    </div>
+  </section>
+  <section class="panel hidden" id="app">
+    <div class="stagebar" id="stagebar"></div>
+    <div class="progress"><span id="bar"></span></div>
+    <div class="grid">
+      <div class="pic"><img src="https://01a0edee-8d76-7aa1-a029-544c8e5016f7.arena.site/images/grandpa-family-band.jpg" alt="family band"></div>
+      <div class="task" id="task"></div>
+    </div>
+  </section>
+  <footer>
+    <div>Academy Stars 3 - individual lesson</div>
+    <button class="ghost" id="wordsBtn">Word cards</button>
+  </footer>
+</div>
+<div class="panel hidden" id="words" style="width:min(1120px,calc(100% - 24px));margin:0 auto 40px">
+  <h2>Word cards</h2>
+  <p>CORE words are for the next dictation. EXTRA words are for the song only.</p>
+  <div class="bank" id="wordBank"></div>
+</div>
+<script>
+var CORE=[["husband","This is my husband."],["wife","This is my wife."],["son","My son plays the flute."],["daughter","My daughter plays the violin."],["grandson","My grandson plays the drums."],["granddaughter","My granddaughters play the trumpets."],["flute","It is a flute."],["violin","My daughter plays the violin."],["drums","They are drums."],["trumpet","My granddaughters play the trumpets."]];
+var EXTRA=[["guitar","My wife plays the guitar."],["piano","The piano is an extra song word."]];
+var PEOPLE=[{label:"Grandma / wife",ok:["wife"]},{label:"Grandpa / husband",ok:["husband"]},{label:"Son",ok:["son"]},{label:"Daughter",ok:["daughter"]},{label:"Grandson",ok:["grandson"]},{label:"Granddaughter",ok:["granddaughter"]},{label:"Granddaughter",ok:["granddaughter"]},{label:"Charlie",ok:["grandson"]}];
+var INSTR=[{id:"flute",ok:["flute"]},{id:"violin",ok:["violin"]},{id:"drums",ok:["drums"]},{id:"trumpet",ok:["trumpet"]},{id:"guitar",ok:["guitar"]}];
+var MATCH=[["son","flute"],["daughter","violin"],["grandson","drums"],["granddaughter","trumpet"],["wife","guitar"]];
+var SONG=[["My wife plays the guitar.","wife"],["My son plays the flute.","son"],["My daughter plays the violin.","daughter"],["My grandson plays the drums.","grandson"],["My granddaughters play the trumpets.","granddaughter"],["This is my husband.","husband"]];
+var CLUES=["wife","husband","son + flute","daughter + violin","grandson + drums","granddaughter + trumpet"];
+var mode="lesson",stage=0,teacher=false,pIndex=0,iIndex=0,songIndex=0,hwIndex=0,foundPairs=0,sentences=[],flipped=[],lock=false;
+function el(id){return document.getElementById(id)}
+function setBar(n,total){el("bar").style.width=(n/total*100)+"%"}
+function soft(){return "Look at the picture again."}
+function showCover(on){el("cover").classList.toggle("hidden",!on);el("app").classList.toggle("hidden",on)}
+function drawStages(){
+  var names=mode==="lesson"?["0 Opening","1 Photo","2 Case","3 Match","4 Flip","5 Song","6 Final"]:["HW Match"];
+  var bar=el("stagebar"); bar.innerHTML="";
+  names.forEach(function(name,i){
+    var b=document.createElement("button"); b.textContent=name;
+    if((mode==="lesson" && i===stage)||(mode==="homework" && i===0)) b.className="on";
+    b.onclick=function(){if(teacher||i<=stage||mode==="homework"){stage=i;render();}};
+    bar.appendChild(b);
+  });
+}
+function render(){
+  drawStages();
+  if(mode==="homework"){renderHW();return;}
+  if(stage===0){showCover(true);setBar(0,6);return;}
+  showCover(false); setBar(stage,6);
+  if(stage===1) renderPhoto();
+  if(stage===2) renderCase();
+  if(stage===3) renderMatch();
+  if(stage===4) renderFlip();
+  if(stage===5) renderSong();
+  if(stage===6) renderFinal();
+}
+function renderPhoto(){
+  var item=PEOPLE[pIndex];
+  var opts=["wife","daughter","granddaughter","husband","son","grandson"];
+  el("task").innerHTML="<div class='kicker'>Stage 1 - The First Photo</div><h2>Who is this?</h2><p>"+(pIndex+1)+" / "+PEOPLE.length+"</p><p>Look at Grandpa's picture. Choose the word for <b>"+item.label+"</b>.</p><div class='choices' id='chs'></div><div class='feedback' id='fb'></div>";
+  opts.sort(function(){return Math.random()-0.5}).forEach(function(w){
+    var b=document.createElement("button"); b.textContent=w;
+    b.onclick=function(){check(item.ok.indexOf(w)!==-1,b,function(){pIndex++; if(pIndex>=PEOPLE.length){pIndex=0;stage=2;} render();});};
+    el("chs").appendChild(b);
+  });
+}
+function renderCase(){
+  var item=INSTR[iIndex];
+  var opts=["flute","violin","drums","trumpet","guitar"];
+  el("task").innerHTML="<div class='kicker'>Stage 2 - The Instrument Case</div><h2>What instrument is this?</h2><p>"+(iIndex+1)+" / "+INSTR.length+"</p><p>Open the case. Tap the word for the next clue: <b>"+item.id+"</b>.</p><div class='choices' id='chs'></div><div class='feedback' id='fb'></div>";
+  opts.forEach(function(w){
+    var b=document.createElement("button"); b.textContent=w;
+    b.onclick=function(){check(item.ok.indexOf(w)!==-1,b,function(){iIndex++; if(iIndex>=INSTR.length){iIndex=0;stage=3;} render();});};
+    el("chs").appendChild(b);
+  });
+}
+function renderMatch(){
+  el("task").innerHTML="<div class='kicker'>Stage 3 - Match the Band</div><h2>Who plays what?</h2><p>Match the person and the instrument.</p><div id='rows'></div><div class='feedback' id='fb'></div><p><button class='start' id='next3'>Continue</button></p>";
+  MATCH.forEach(function(pair){
+    var row=document.createElement("p");
+    row.innerHTML="<b>"+pair[0]+"</b> plays the <select data-a='"+pair[0]+"'><option value=''>?</option><option>flute</option><option>violin</option><option>drums</option><option>trumpet</option><option>guitar</option></select>";
+    el("rows").appendChild(row);
+  });
+  el("next3").onclick=function(){
+    var ok=true;
+    [].slice.call(document.querySelectorAll("select")).forEach(function(s){
+      var need=MATCH.filter(function(p){return p[0]===s.getAttribute("data-a")})[0][1];
+      if(s.value!==need) ok=false;
+    });
+    el("fb").textContent=ok?"The band is back together.":soft();
+    if(ok){stage=4;render();}
+  };
+}
+function renderFlip(){
+  var cards=["wife","violin","son","drums","pic-wife","pic-violin","pic-son","pic-drums"];
+  if(!renderFlip.shuffled){renderFlip.shuffled=cards.sort(function(){return Math.random()-0.5});foundPairs=0;flipped=[];}
+  el("task").innerHTML="<div class='kicker'>Stage 4 - Album Flip</div><h2>Find four pairs</h2><p>"+foundPairs+" / 4 pairs found</p><div class='pair' id='chs'></div><div class='feedback' id='fb'></div>";
+  renderFlip.shuffled.forEach(function(c,idx){
+    var b=document.createElement("button");
+    b.textContent=flipped.indexOf(idx)>=0||teacher?c.replace("pic-","picture: "):"card";
+    b.onclick=function(){
+      if(lock||flipped.indexOf(idx)>=0) return;
+      flipped.push(idx); renderFlip();
+      if(flipped.length%2===0){
+        var a=renderFlip.shuffled[flipped[flipped.length-2]];
+        var b2=renderFlip.shuffled[flipped[flipped.length-1]];
+        var pair=(a.replace("pic-","")===b2.replace("pic-","") && a!==b2);
+        if(pair){foundPairs++; if(foundPairs>=4){setTimeout(function(){stage=5;renderFlip.shuffled=null;render();},400);}}
+        else {lock=true; setTimeout(function(){flipped=flipped.slice(0,-2);lock=false;renderFlip();},700);}
+      }
+    };
+    el("chs").appendChild(b);
+  });
+}
+function renderSong(){
+  var item=SONG[songIndex];
+  el("task").innerHTML="<div class='kicker'>Stage 5 - Grandpa's Song Check</div><h2>Tap the person</h2><p>"+(songIndex+1)+" / "+SONG.length+"</p><p><b>"+item[0]+"</b></p><p>Read, then tap the person.</p><div class='choices' id='chs'></div><div class='feedback' id='fb'></div>";
+  ["wife","husband","son","daughter","grandson","granddaughter"].forEach(function(w){
+    var b=document.createElement("button"); b.textContent=w;
+    b.onclick=function(){check(w===item[1],b,function(){songIndex++; if(songIndex>=SONG.length){songIndex=0;stage=6;} render();});};
+    el("chs").appendChild(b);
+  });
+}
+function renderFinal(){
+  el("task").innerHTML="<div class='kicker'>Stage 6 - Final Mission</div><h2>Restore the caption</h2><p>Write 6 sentences about the picture. "+sentences.length+" / 6 needed</p><p>Clue: use <b>"+CLUES[Math.min(sentences.length,5)]+"</b></p><input id='line' type='text' placeholder='My son plays the flute.'><p><button class='start' id='save'>Save sentence</button></p><div id='list'></div>";
+  el("list").innerHTML=sentences.map(function(s,i){return "<div class='saved'>"+(i+1)+". "+s+"</div>";}).join("");
+  el("save").onclick=function(){
+    var v=el("line").value.replace(/[<>]/g,"").trim();
+    if(v.length<6) return;
+    sentences.push(v);
+    if(sentences.length>=6){el("task").innerHTML="<h2>The album is complete.</h2><p>The family band is back. Well detected.</p>"+sentences.map(function(s,i){return "<div class='saved'>"+(i+1)+". "+s+"</div>";}).join("");return;}
+    renderFinal();
+  };
+}
+function renderHW(){
+  showCover(false); setBar(hwIndex,10);
+  var word=CORE[hwIndex][0];
+  el("task").innerHTML="<div class='kicker'>Homework - dictation practice</div><h2>Match words to the picture</h2><p>"+(hwIndex+1)+" / 10</p><p>Choose the picture for <b>"+word+"</b>.</p><div class='choices' id='chs'></div><div class='feedback' id='fb'></div>";
+  var opts=CORE.map(function(x){return x[0];}).sort(function(){return Math.random()-0.5}).slice(0,5);
+  if(opts.indexOf(word)<0) opts[0]=word;
+  opts.forEach(function(w){
+    var b=document.createElement("button"); b.textContent=w;
+    b.onclick=function(){check(w===word,b,function(){hwIndex++; if(hwIndex>=10){el("task").innerHTML="<h2>Homework complete.</h2><p>10 / 10 matched. Ready for dictation.</p>";hwIndex=0;return;} render();});};
+    el("chs").appendChild(b);
+  });
+}
+function check(ok,btn,next){
+  var fb=el("fb");
+  if(ok){btn.className="ok"; if(fb) fb.textContent="Yes."; setTimeout(next,350);}
+  else {btn.className="bad"; if(fb) fb.textContent=soft();}
+}
+el("startBtn").onclick=function(){stage=1;render();};
+el("tabLesson").onclick=function(){mode="lesson";el("tabLesson").className="on";el("tabHomework").className="off";render();};
+el("tabHomework").onclick=function(){mode="homework";el("tabLesson").className="off";el("tabHomework").className="on";render();};
+el("teacherBtn").onclick=function(){teacher=!teacher;el("teacherBtn").className=teacher?"on":"off";render();};
+el("wordsBtn").onclick=function(){
+  var box=el("words"); box.classList.toggle("hidden");
+  el("wordBank").innerHTML=CORE.map(function(w){return "<div class='saved'><b>"+w[0]+"</b><div>"+w[1]+"</div><small>CORE</small></div>";}).join("")+EXTRA.map(function(w){return "<div class='saved'><b>"+w[0]+"</b><div>"+w[1]+"</div><small>EXTRA</small></div>";}).join("");
+};
+render();
+</script>
+</body>
+</html>
