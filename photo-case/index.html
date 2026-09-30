@@ -20,12 +20,11 @@
 .hero,.panel{background:var(--paper);border-radius:24px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.28)}
 .cover-art{height:420px;display:grid;grid-template-columns:1.35fr .75fr}
 .scene{position:relative;overflow:hidden;background:#2a2118}
-.scene img{width:100%;height:420px;object-fit:cover;object-position:center 40%;display:block}
+.scene img{width:100%;height:420px;object-fit:cover;object-position:center 35%;display:block}
 .scene .tag{position:absolute;left:20px;bottom:18px;background:rgba(28,22,18,.72);padding:8px 12px;border-radius:10px;font-weight:800;letter-spacing:.08em;font-size:12px;color:#fff}
 .copy{padding:28px 26px;background:#1c1612;color:#fff;display:flex;flex-direction:column;justify-content:flex-end}
 .kicker{letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:700;color:#e8d3a4}
 h1{font-family:"Libre Caslon Display",Georgia,serif;font-size:clamp(36px,7vw,64px);margin:6px 0 8px;font-weight:400}
-h2{font-family:"Libre Caslon Display",Georgia,serif;font-weight:400}
 .panel{padding:22px}.hidden{display:none}
 .meta{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
 .chip{background:#eadcc8;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700}
@@ -45,10 +44,10 @@ textarea{min-height:90px}
 .sort,.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .col{background:#fff;border-radius:16px;padding:12px;min-height:160px}
 .tile{background:#eadcc8;border-radius:12px;padding:8px 10px;margin:6px 0;font-weight:700}
-.note{color:var(--muted)}
+.note{color:#d9c8b2}
 footer{display:flex;justify-content:space-between;color:#d9c8b2;margin-top:14px;font-size:13px}
 .verbs span{background:#3a2f26;color:#f3e6d4;border-radius:999px;padding:4px 8px;font-size:12px;margin:4px}
-@media(max-width:900px){.board,.cover-art,.pair,.sort{grid-template-columns:1fr}.scene img{height:220px}}
+@media(max-width:900px){.board,.cover-art,.pair,.sort{grid-template-columns:1fr}.scene img{height:240px}}
 </style>
 </head>
 <body>
@@ -59,12 +58,10 @@ footer{display:flex;justify-content:space-between;color:#d9c8b2;margin-top:14px;
 <div class="scene"><img id="heroShot" src="cover.jpg" alt="Yesterday on the street"><div class="tag">YESTERDAY ON THE STREET</div></div>
 <div class="copy"><div class="kicker">Grammar · Detective case</div><h1>Photo Case</h1>
 <p>You are the detective. Open 3 case files.</p>
-<p class="note" style="color:#d9c8b2">3 cells, at least 1 PRODUCTION.</p>
+<p class="note">3 cells, at least 1 PRODUCTION.</p>
 <p><button class="start" id="startBtn">Open the case board</button></p></div></div></section>
 <section class="panel hidden" id="app"><div class="meta"><div class="chip" id="prog">Cells done: 0/3</div><div class="chip" id="prodChip">Need 1 PRODUCTION cell</div><div class="chip" id="picked">Chosen: —</div></div><div id="view"></div></section>
 <footer><div>Past Simple irregulars</div><button class="ghost" id="resetBtn">Reset case</button></footer>
 </div>
-<script src="cover.js"></script>
 <script src="photos.js"></script>
-<script>if(typeof COVER==="string"){var h=document.getElementById("heroShot"); if(h) h.src=COVER;}</script>
 </body></html>
