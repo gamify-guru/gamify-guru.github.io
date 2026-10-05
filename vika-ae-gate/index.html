@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Siege of the a_e Gate — Вика</title>
+<style>
+  :root { --ink:#2a2118; --paper:#f6efe4; --card:#fffaf3; --gold:#c4a15a; --ember:#9a3b24; --ok:#2f6b4f; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#1c1612; color:var(--ink); font-family: Georgia, "Times New Roman", serif; }
+  header { max-width: 880px; margin: 0 auto; padding: 28px 18px 8px; color:#f3e6d4; }
+  header p { color:#e6d3b4; line-height:1.45; }
+  h1 { font-size: 2rem; margin: 0 0 8px; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 18px 48px; }
+  img.scene { width:100%; border-radius:18px; display:block; box-shadow: 0 16px 40px rgba(0,0,0,.35); }
+  .card { background: var(--card); border-radius: 18px; padding: 18px 18px 8px; margin: 16px 0; }
+  h2 { margin: 0 0 6px; font-size: 1.35rem; }
+  .meta { color:#6d5c49; margin: 0 0 12px; }
+  ol { padding-left: 1.2rem; }
+  li { margin: 10px 0; line-height: 1.45; }
+  .choices button, .flank button { margin: 4px 6px 4px 0; border:1px solid #d9c7a8; background:#fff; border-radius:999px; padding:6px 12px; font: inherit; cursor:pointer; }
+  .choices button.on, .flank button.on { background:#2a2118; color:#f6efe4; border-color:#2a2118; }
+  input[type="text"], textarea { font: inherit; border: none; border-bottom: 2px solid var(--gold); background: transparent; min-width: 7rem; padding: 2px 4px; color: var(--ink); }
+  textarea { width:100%; min-height: 4.2rem; border:1px solid #e4d5bc; border-radius:10px; padding:8px; background:#fff; }
+  .runes { display:flex; gap:8px; margin: 14px 0; }
+  .rune { flex:1; text-align:center; background:#2a2118; color:#f3e6d4; border-radius:12px; padding:10px 6px; opacity:.4; }
+  .rune.lit { opacity:1; background:#9a3b24; }
+  .check { background:var(--ember); color:#fff; border:0; border-radius:999px; padding:8px 14px; font: inherit; cursor:pointer; }
+  .hint { color: var(--ok); min-height: 1.4em; }
+  .words { letter-spacing:.02em; }
+  footer { color:#e6d3b4; padding-bottom: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Siege of the a_e Gate</h1>
+  <p>Вика, ты командир. Ворота откроются только на длинное <b>A</b> — звук /eɪ/. В слоге <b>a_e</b> буква A говорит своё имя, а <b>e</b> на конце молчит. Ключи: Jake, snake, skate, late, cake, plane.</p>
+</header>
+<div class="wrap">
+  <img class="scene" src="gate.jpg" alt="Вика у ворот a_e: слева skate, справа snake, в небе plane, на башне cake">
+  <div class="runes" id="runes">
+    <div class="rune" id="r1">Руна 1<br>звук</div>
+    <div class="rune" id="r2">Руна 2<br>путь</div>
+    <div class="rune" id="r3">Руна 3<br>рация</div>
+    <div class="rune" id="r4">Руна 4<br>босс</div>
+  </div>
+
+  <section class="card" id="s1">
+    <h2>1. Руны у ворот</h2>
+    <p class="meta">Выбери ключ с длинным A и нажми его. Короткое A, как в cat, ворота не откроет.</p>
+    <ol class="choices" id="pairs"></ol>
+    <button class="check" onclick="checkPairs()">Зажечь руну 1</button>
+    <p class="hint" id="h1"></p>
+  </section>
+
+  <section class="card" id="s2">
+    <h2>2. Два фланга</h2>
+    <p class="meta">Прочитай восемь кодов. Потом выбери свой путь.</p>
+    <ol>
+      <li>The ice code is skate.</li>
+      <li>We can skate past the gate.</li>
+      <li>Skate is a long A word.</li>
+      <li>The cave code is snake.</li>
+      <li>A snake is in the cave.</li>
+      <li>Snake is a long A word.</li>
+      <li>Jake can skate.</li>
+      <li>Jake can see the snake.</li>
+    </ol>
+    <div class="flank">
+      <button type="button" onclick="pickFlank('skate', this)">Мой фланг: skate</button>
+      <button type="button" onclick="pickFlank('snake', this)">Мой фланг: snake</button>
+    </div>
+    <p class="hint" id="h2"></p>
+  </section>
+
+  <section class="card" id="s3">
+    <h2>3. Рация союзника</h2>
+    <p class="meta">Вставь слово. Слова: Jake, snake, skate, late, cake, plane. Одно можно использовать дважды.</p>
+    <ol id="radio"></ol>
+    <button class="check" onclick="checkRadio()">Зажечь руну 3</button>
+    <p class="hint" id="h3"></p>
+  </section>
+
+  <section class="card" id="s4">
+    <h2>4. Босс у ворот</h2>
+    <p class="meta">Собери слово. A говорит имя, e молчит.</p>
+    <ol id="boss"></ol>
+    <button class="check" onclick="checkBoss()">Зажечь руну 4</button>
+    <p class="hint" id="h4"></p>
+  </section>
+
+  <section class="card" id="s5">
+    <h2>Финальный приказ</h2>
+    <p class="meta">Шесть строк. Обязательно прозвучат plane, cake и слово твоего фланга.</p>
+    <ol>
+      <li>I am Jake.</li>
+      <li>We are not <input data-final="late" placeholder="late">.</li>
+      <li id="flank-line">We can <input data-final="skate" placeholder="skate"> on the ice.</li>
+      <li>The <input data-final="plane" placeholder="plane"> is in the sky.</li>
+      <li>The <input data-final="cake" placeholder="cake"> is on the tower.</li>
+      <li>Open the gate.</li>
+    </ol>
+    <button class="check" onclick="checkFinal()">Открыть ворота</button>
+    <p class="hint" id="h5"></p>
+  </section>
+
+  <footer>
+    <p>Правило, которое уносишь с миссии: в слоге a_e буква A говорит своё имя /eɪ/, а e на конце молчит.</p>
+  </footer>
+</div>
+<script>
+const pairs = [
+  ["cat","cake"],["hat","plane"],["bag","snake"],["lamp","skate"],
+  ["sad","late"],["map","Jake"],["pan","cake"],["cap","plane"]
+];
+const pairBox = document.getElementById("pairs");
+pairs.forEach((p,i) => {
+  const li = document.createElement("li");
+  p.forEach(word => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = word;
+    b.onclick = () => { li.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on"); li.dataset.pick = word; };
+    li.appendChild(b);
+  });
+  pairBox.appendChild(li);
+});
+function checkPairs() {
+  const lis = [...pairBox.children];
+  const ok = lis.filter(li => li.dataset.pick && /a.e/i.test(li.dataset.pick.replace("Jake","Jake")) && !["cat","hat","bag","lamp","sad","map","pan","cap"].includes(li.dataset.pick)).length;
+  const hint = document.getElementById("h1");
+  if (ok === 8) { light(1); hint.textContent = "Руна 1 горит. Все ключи с длинным A."; }
+  else hint.textContent = "Ворота мигают. Ищи a_e: A говорит имя, e молчит. Сейчас верных ключей: " + ok + " из 8.";
+}
+let flank = "";
+function pickFlank(word, btn) {
+  flank = word;
+  document.querySelectorAll(".flank button").forEach(b => b.classList.remove("on"));
+  btn.classList.add("on");
+  light(2);
+  const line = document.getElementById("flank-line");
+  if (word === "snake") line.innerHTML = 'The <input data-final="snake" placeholder="snake"> is asleep.';
+  else line.innerHTML = 'We can <input data-final="skate" placeholder="skate"> on the ice.';
+  document.getElementById("h2").textContent = "Путь выбран: " + word + ". Руна 2 горит.";
+}
+const radio = [
+  ["I am ____.", "jake"],
+  ["I am not ____.", "late"],
+  ["I can ____ on the ice.", "skate"],
+  ["I see a ____ in the cave.", "snake"],
+  ["The ____ is in the sky.", "plane"],
+  ["The ____ is on the tower.", "cake"],
+  ["____ can help us.", "jake"],
+  ["Do not be ____.", "late"]
+];
+const radioBox = document.getElementById("radio");
+radio.forEach(([text, key]) => {
+  const li = document.createElement("li");
+  li.innerHTML = text.replace("____", `<input data-key="${key}" placeholder="...">`);
+  radioBox.appendChild(li);
+});
+function checkRadio() {
+  const inputs = [...radioBox.querySelectorAll("input")];
+  const ok = inputs.filter(el => el.value.trim().toLowerCase() === el.dataset.key).length;
+  const hint = document.getElementById("h3");
+  if (ok === 8) { light(3); hint.textContent = "Jake слышит тебя. Руна 3 горит."; }
+  else hint.textContent = "Помехи. Проверь длинное A. Верных фраз: " + ok + " из 8.";
+}
+const boss = [
+  ["c + a + k + e → The ____ is a signal.", "cake"],
+  ["pl + a + n + e → The ____ is here.", "plane"],
+  ["sk + a + t + e → We can ____.", "skate"],
+  ["sn + a + k + e → The ____ is asleep.", "snake"],
+  ["l + a + t + e → We are not ____.", "late"],
+  ["J + a + k + e → ____ is my scout.", "jake"],
+  ["c + a + k + e → I see the ____.", "cake"],
+  ["pl + a + n + e → Jake is on the ____.", "plane"]
+];
+const bossBox = document.getElementById("boss");
+boss.forEach(([text, key]) => {
+  const li = document.createElement("li");
+  li.innerHTML = text.replace("____", `<input data-key="${key}" placeholder="...">`);
+  bossBox.appendChild(li);
+});
+function checkBoss() {
+  const inputs = [...bossBox.querySelectorAll("input")];
+  const ok = inputs.filter(el => el.value.trim().toLowerCase() === el.dataset.key).length;
+  const hint = document.getElementById("h4");
+  if (ok === 8) { light(4); hint.textContent = "Капитан отступает. Руна 4 горит."; }
+  else hint.textContent = "Одна руна мигает, миссия жива. A говорит имя, e молчит. Верных паролей: " + ok + " из 8.";
+}
+function checkFinal() {
+  const inputs = [...document.querySelectorAll("#s5 input")];
+  const ok = inputs.filter(el => el.value.trim().toLowerCase() === el.dataset.final).length;
+  const hint = document.getElementById("h5");
+  if (ok === inputs.length && flank) hint.textContent = "Ворота открыты. Plane здесь, cake на башне, осада снята длинным A.";
+  else if (!flank) hint.textContent = "Сначала выбери фланг на этапе 2.";
+  else hint.textContent = "Почти. Дострой приказ словами late, plane, cake и словом своего фланга.";
+}
+function light(n) { document.getElementById("r"+n).classList.add("lit"); }
+</script>
+</body>
+</html>
