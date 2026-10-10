@@ -143,7 +143,7 @@
 </head>
 <body>
   <h1>Word Typing</h1>
-  <p class="subtitle">Слушай слово и напечатай его</p>
+  <p class="subtitle">Слушай видео и напечатай слова</p>
 
   <div class="video-wrap">
     <video id="introVideo" controls preload="metadata">
@@ -153,11 +153,10 @@
 
   <div class="card">
     <div id="wordDisplay" class="hidden">—</div>
-    <p class="hint" id="hint">Нажми «Повторить», чтобы услышать слово</p>
+    <p class="hint" id="hint">Печатай слова из видео</p>
     <input id="input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="печатай здесь" autofocus>
     <div class="feedback" id="feedback"></div>
     <div style="margin-top:14px">
-      <button id="replay">🔊 Повторить слово</button>
       <button id="nextBtn" class="next">Следующее слово →</button>
       <button id="skip">Пропустить</button>
       <button id="checkBtn" class="primary">Проверить</button>
@@ -233,15 +232,6 @@ function shuffle(arr) {
   return arr;
 }
 
-function speak(text) {
-  if (!window.speechSynthesis) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US";
-  u.rate = 0.85;
-  speechSynthesis.speak(u);
-}
-
 function nextWord() {
   answered = false;
   nextBtn.style.display = "none";
@@ -267,9 +257,8 @@ function nextWord() {
     hint.textContent = "Режим учителя: слово видно";
   } else {
     wordDisplay.classList.add("hidden");
-    hint.textContent = "Слушай и печатай";
+    hint.textContent = "Печатай слово из видео";
   }
-  speak(currentWord);
   input.focus();
 }
 
@@ -333,10 +322,6 @@ input.addEventListener("keydown", e => {
     e.preventDefault();
     check();
   }
-});
-
-document.getElementById("replay").addEventListener("click", () => {
-  if (currentWord) speak(currentWord);
 });
 
 nextBtn.addEventListener("click", nextWord);
