@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Typing Trainer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0f1419;
+    color: #e6edf3;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+  }
+  h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.02em; }
+  .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 28px; text-align: center; }
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+  }
+  #wordDisplay {
+    font-size: 2.4rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    min-height: 60px;
+    margin-bottom: 8px;
+    color: #58a6ff;
+  }
+  #wordDisplay.hidden { visibility: hidden; }
+  .hint { color: #8b949e; font-size: 0.85rem; margin-bottom: 20px; }
+  #input {
+    width: 100%;
+    max-width: 320px;
+    font-size: 1.6rem;
+    padding: 12px 16px;
+    border: 2px solid #30363d;
+    border-radius: 8px;
+    background: #0d1117;
+    color: #e6edf3;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #input:focus { border-color: #58a6ff; }
+  #input.correct { border-color: #3fb950; }
+  #input.wrong { border-color: #f85149; }
+  .stats {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: #8b949e;
+  }
+  .stats span { color: #e6edf3; font-weight: 600; }
+  button {
+    background: #21262d;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin: 6px 4px;
+    transition: background 0.15s;
+  }
+  button:hover { background: #30363d; }
+  button.primary { background: #238636; border-color: #2ea043; }
+  button.primary:hover { background: #2ea043; }
+  #keyboard {
+    margin-top: 32px;
+    width: 100%;
+    max-width: 720px;
+  }
+  .row { display: flex; justify-content: center; gap: 6px; margin-bottom: 6px; }
+  .key {
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    min-width: 42px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #e6edf3;
+    user-select: none;
+    transition: background 0.08s, transform 0.08s;
+  }
+  .key.active { background: #58a6ff; color: #0d1117; }
+  .key.wide { min-width: 80px; }
+  .teacher-panel {
+    margin-top: 28px;
+    background: #161b22;
+    border: 1px dashed #30363d;
+    border-radius: 10px;
+    padding: 16px;
+    width: 100%;
+    max-width: 520px;
+    font-size: 0.85rem;
+  }
+  .teacher-panel h3 { margin-bottom: 10px; font-size: 0.95rem; }
+  textarea {
+    width: 100%;
+    height: 100px;
+    background: #0d1117;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 8px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.85rem;
+    resize: vertical;
+  }
+  .feedback { margin-top: 12px; font-size: 0.95rem; min-height: 1.4em; }
+  .feedback.good { color: #3fb950; }
+  .feedback.bad { color: #f85149; }
+</style>
+</head>
+<body>
+  <h1>Word Typing</h1>
+  <p class="subtitle">Слушай слово и напечатай его</p>
+
+  <div class="card">
+    <div id="wordDisplay" class="hidden">—</div>
+    <p class="hint" id="hint">Нажми «Повторить», чтобы услышать слово</p>
+    <input id="input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="печатай здесь" autofocus>
+    <div class="feedback" id="feedback"></div>
+    <div class="stats">
+      Правильно: <span id="correct">0</span> &nbsp;|&nbsp; Всего: <span id="total">0</span>
+    </div>
+    <div style="margin-top:14px">
+      <button id="replay">🔊 Повторить слово</button>
+      <button id="skip">Пропустить</button>
+    </div>
+  </div>
+
+  <div id="keyboard"></div>
+
+  <div class="teacher-panel" id="teacherPanel" style="display:none">
+    <h3>Режим учителя</h3>
+    <p style="margin-bottom:8px; color:#8b949e">Слова (по одному на строку). Сохраняется в браузере.</p>
+    <textarea id="wordList"></textarea>
+    <div style="margin-top:8px">
+      <button id="saveWords" class="primary">Сохранить слова</button>
+      <button id="hideTeacher">Скрыть панель</button>
+    </div>
+  </div>
+
+<script>
+// === БАНК СЛОВ ===
+// Учитель: вставь сюда свои слова (или используй панель учителя в режиме ?teacher)
+// Пример:
+// const DEFAULT_WORDS = ["cat", "dog", "house", "school"];
+const DEFAULT_WORDS = [];
+
+// Загружаем из localStorage, если есть
+let words = JSON.parse(localStorage.getItem("typingWords") || "null") || DEFAULT_WORDS.slice();
+
+let currentIndex = 0;
+let correctCount = 0;
+let totalAttempts = 0;
+let currentWord = "";
+const isTeacher = new URLSearchParams(location.search).has("teacher");
+
+const input = document.getElementById("input");
+const wordDisplay = document.getElementById("wordDisplay");
+const feedback = document.getElementById("feedback");
+const correctEl = document.getElementById("correct");
+const totalEl = document.getElementById("total");
+const hint = document.getElementById("hint");
+const teacherPanel = document.getElementById("teacherPanel");
+const wordList = document.getElementById("wordList");
+
+if (isTeacher) {
+  teacherPanel.style.display = "block";
+  wordList.value = words.join("\n");
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
+
+function nextWord() {
+  if (words.length === 0) {
+    wordDisplay.textContent = "—";
+    wordDisplay.classList.remove("hidden");
+    hint.textContent = "Слова ещё не добавлены. Открой ссылку с ?teacher и добавь слова.";
+    currentWord = "";
+    return;
+  }
+  if (currentIndex >= words.length) {
+    currentIndex = 0;
+    shuffle(words);
+  }
+  currentWord = words[currentIndex];
+  currentIndex++;
+  input.value = "";
+  input.className = "";
+  feedback.textContent = "";
+  feedback.className = "feedback";
+  if (isTeacher) {
+    wordDisplay.textContent = currentWord;
+    wordDisplay.classList.remove("hidden");
+    hint.textContent = "Режим учителя: слово видно";
+  } else {
+    wordDisplay.textContent = "•".repeat(Math.min(currentWord.length, 8));
+    wordDisplay.classList.add("hidden");
+    hint.textContent = "Слушай и печатай";
+  }
+  speak(currentWord);
+  input.focus();
+}
+
+function check() {
+  const typed = input.value.trim().toLowerCase();
+  if (!currentWord) return;
+  totalAttempts++;
+  totalEl.textContent = totalAttempts;
+  if (typed === currentWord.toLowerCase()) {
+    correctCount++;
+    correctEl.textContent = correctCount;
+    input.className = "correct";
+    feedback.textContent = "Верно!";
+    feedback.className = "feedback good";
+    setTimeout(nextWord, 700);
+  } else {
+    input.className = "wrong";
+    feedback.textContent = "Неверно. Правильно: " + currentWord;
+    feedback.className = "feedback bad";
+    wordDisplay.textContent = currentWord;
+    wordDisplay.classList.remove("hidden");
+    setTimeout(() => {
+      nextWord();
+    }, 1800);
+  }
+}
+
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    check();
+  }
+});
+
+document.getElementById("replay").addEventListener("click", () => {
+  if (currentWord) speak(currentWord);
+});
+
+document.getElementById("skip").addEventListener("click", nextWord);
+
+document.getElementById("saveWords").addEventListener("click", () => {
+  const lines = wordList.value.split("\n").map(s => s.trim()).filter(Boolean);
+  words = lines;
+  localStorage.setItem("typingWords", JSON.stringify(words));
+  currentIndex = 0;
+  correctCount = 0;
+  totalAttempts = 0;
+  correctEl.textContent = "0";
+  totalEl.textContent = "0";
+  alert("Слова сохранены. Теперь ученик услышит их на этой же ссылке (в этом браузере).");
+  nextWord();
+});
+
+document.getElementById("hideTeacher").addEventListener("click", () => {
+  teacherPanel.style.display = "none";
+});
+
+// Клавиатура
+const rows = [
+  "q w e r t y u i o p".split(" "),
+  "a s d f g h j k l".split(" "),
+  ["⇧", ..."z x c v b n m".split(" "), "⌫"]
+];
+
+const kb = document.getElementById("keyboard");
+rows.forEach(row => {
+  const div = document.createElement("div");
+  div.className = "row";
+  row.forEach(k => {
+    const el = document.createElement("div");
+    el.className = "key" + (k === "⇧" || k === "⌫" ? " wide" : "");
+    el.textContent = k;
+    el.dataset.key = k.toLowerCase();
+    div.appendChild(el);
+  });
+  kb.appendChild(div);
+});
+
+function highlightKey(key) {
+  const k = key.toLowerCase();
+  document.querySelectorAll(".key").forEach(el => {
+    if (el.dataset.key === k || (k === " " && el.textContent === "space")) {
+      el.classList.add("active");
+      setTimeout(() => el.classList.remove("active"), 120);
+    }
+  });
+}
+
+input.addEventListener("input", () => {
+  const last = input.value.slice(-1);
+  if (last) highlightKey(last);
+});
+
+// Старт
+if (words.length) shuffle(words);
+nextWord();
+</script>
+</body>
+</html>
