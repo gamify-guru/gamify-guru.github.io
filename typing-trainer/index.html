@@ -77,6 +77,8 @@
   button:hover { background: #30363d; }
   button.primary { background: #238636; border-color: #2ea043; }
   button.primary:hover { background: #2ea043; }
+  button.next { background: #1f6feb; border-color: #388bfd; display: none; }
+  button.next:hover { background: #388bfd; }
   #keyboard {
     margin-top: 32px;
     width: 100%;
@@ -156,6 +158,7 @@
     <div class="feedback" id="feedback"></div>
     <div style="margin-top:14px">
       <button id="replay">🔊 Повторить слово</button>
+      <button id="nextBtn" class="next">Следующее слово →</button>
       <button id="skip">Пропустить</button>
       <button id="checkBtn" class="primary">Проверить</button>
     </div>
@@ -202,6 +205,7 @@ let currentIndex = 0;
 let correctCount = 0;
 let wrongCount = 0;
 let currentWord = "";
+let answered = false;
 const isTeacher = new URLSearchParams(location.search).has("teacher");
 
 const input = document.getElementById("input");
@@ -214,6 +218,7 @@ const results = document.getElementById("results");
 const resCorrect = document.getElementById("resCorrect");
 const resWrong = document.getElementById("resWrong");
 const resTotal = document.getElementById("resTotal");
+const nextBtn = document.getElementById("nextBtn");
 
 if (isTeacher) {
   teacherPanel.style.display = "block";
@@ -238,6 +243,8 @@ function speak(text) {
 }
 
 function nextWord() {
+  answered = false;
+  nextBtn.style.display = "none";
   if (words.length === 0) {
     hint.textContent = "Нет слов.";
     currentWord = "";
@@ -251,6 +258,7 @@ function nextWord() {
   currentIndex++;
   input.value = "";
   input.className = "";
+  input.disabled = false;
   feedback.textContent = "";
   feedback.className = "feedback";
   if (isTeacher) {
@@ -270,17 +278,23 @@ function normalize(str) {
 }
 
 function check() {
+  if (answered) {
+    nextWord();
+    return;
+  }
   const typed = normalize(input.value);
   if (!currentWord || !typed) return;
 
   const isCorrect = typed === normalize(currentWord);
+  answered = true;
+  input.disabled = true;
+  nextBtn.style.display = "inline-block";
 
   if (isCorrect) {
     correctCount++;
     input.className = "correct";
     feedback.textContent = "Верно!";
     feedback.className = "feedback good";
-    setTimeout(nextWord, 600);
   } else {
     wrongCount++;
     input.className = "wrong";
@@ -288,7 +302,6 @@ function check() {
     feedback.className = "feedback bad";
     wordDisplay.textContent = currentWord;
     wordDisplay.classList.remove("hidden");
-    setTimeout(nextWord, 1600);
   }
 }
 
@@ -326,9 +339,9 @@ document.getElementById("replay").addEventListener("click", () => {
   if (currentWord) speak(currentWord);
 });
 
-document.getElementById("skip").addEventListener("click", () => {
-  nextWord();
-});
+nextBtn.addEventListener("click", nextWord);
+
+document.getElementById("skip").addEventListener("click", nextWord);
 
 document.getElementById("checkBtn").addEventListener("click", showResults);
 
