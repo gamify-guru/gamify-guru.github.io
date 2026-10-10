@@ -63,13 +63,6 @@
   #input:focus { border-color: #58a6ff; }
   #input.correct { border-color: #3fb950; }
   #input.wrong { border-color: #f85149; }
-  .stats {
-    margin-top: 16px;
-    font-size: 0.95rem;
-    color: #8b949e;
-    font-weight: 500;
-  }
-  .stats span { color: #e6edf3; font-weight: 700; }
   button {
     background: #21262d;
     color: #e6edf3;
@@ -161,9 +154,6 @@
     <p class="hint" id="hint">Нажми «Повторить», чтобы услышать слово</p>
     <input id="input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="печатай здесь" autofocus>
     <div class="feedback" id="feedback"></div>
-    <div class="stats">
-      Правильно: <span id="correct">0</span> &nbsp;|&nbsp; Неправильно: <span id="wrong">0</span> &nbsp;|&nbsp; Всего: <span id="total">0</span>
-    </div>
     <div style="margin-top:14px">
       <button id="replay">🔊 Повторить слово</button>
       <button id="skip">Пропустить</button>
@@ -217,9 +207,6 @@ const isTeacher = new URLSearchParams(location.search).has("teacher");
 const input = document.getElementById("input");
 const wordDisplay = document.getElementById("wordDisplay");
 const feedback = document.getElementById("feedback");
-const correctEl = document.getElementById("correct");
-const wrongEl = document.getElementById("wrong");
-const totalEl = document.getElementById("total");
 const hint = document.getElementById("hint");
 const teacherPanel = document.getElementById("teacherPanel");
 const wordList = document.getElementById("wordList");
@@ -231,12 +218,6 @@ const resTotal = document.getElementById("resTotal");
 if (isTeacher) {
   teacherPanel.style.display = "block";
   wordList.value = words.join("\n");
-}
-
-function updateStats() {
-  correctEl.textContent = correctCount;
-  wrongEl.textContent = wrongCount;
-  totalEl.textContent = correctCount + wrongCount;
 }
 
 function shuffle(arr) {
@@ -299,7 +280,6 @@ function check() {
     input.className = "correct";
     feedback.textContent = "Верно!";
     feedback.className = "feedback good";
-    updateStats();
     setTimeout(nextWord, 600);
   } else {
     wrongCount++;
@@ -308,7 +288,6 @@ function check() {
     feedback.className = "feedback bad";
     wordDisplay.textContent = currentWord;
     wordDisplay.classList.remove("hidden");
-    updateStats();
     setTimeout(nextWord, 1600);
   }
 }
@@ -331,7 +310,6 @@ function resetAll() {
   correctCount = 0;
   wrongCount = 0;
   currentIndex = 0;
-  updateStats();
   hideResults();
   shuffle(words);
   nextWord();
@@ -368,7 +346,7 @@ document.getElementById("saveWords").addEventListener("click", () => {
 });
 
 document.getElementById("hideTeacher").addEventListener("click", () => {
-  teacherPanel.style.display = "none";
+  teacherPanel.style.display = "none");
 });
 
 // Клавиатура
@@ -408,7 +386,6 @@ input.addEventListener("input", () => {
 });
 
 // Старт
-updateStats();
 shuffle(words);
 nextWord();
 </script>
