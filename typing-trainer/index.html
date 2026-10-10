@@ -65,10 +65,11 @@
   #input.wrong { border-color: #f85149; }
   .stats {
     margin-top: 16px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #8b949e;
+    font-weight: 500;
   }
-  .stats span { color: #e6edf3; font-weight: 600; }
+  .stats span { color: #e6edf3; font-weight: 700; }
   button {
     background: #21262d;
     color: #e6edf3;
@@ -184,7 +185,7 @@
 
   <div class="teacher-panel" id="teacherPanel" style="display:none">
     <h3>Режим учителя</h3>
-    <p style="margin-bottom:8px; color:#8b949e">Слова (по одному на строку). Сохраняется в браузере.</p>
+    <p style="margin-bottom:8px; color:#8b949e">Слова (по одному на строку).</p>
     <textarea id="wordList"></textarea>
     <div style="margin-top:8px">
       <button id="saveWords" class="primary">Сохранить слова</button>
@@ -193,7 +194,6 @@
   </div>
 
 <script>
-// === БАНК СЛОВ (не видны ученице) ===
 const DEFAULT_WORDS = [
   "clean",
   "dust",
@@ -207,13 +207,10 @@ const DEFAULT_WORDS = [
   "watch a film"
 ];
 
-// Принудительно используем новый список (старый localStorage игнорируем)
-localStorage.removeItem("typingWords");
 let words = DEFAULT_WORDS.slice();
-
 let currentIndex = 0;
 let correctCount = 0;
-let totalAttempts = 0;
+let wrongCount = 0;
 let currentWord = "";
 const isTeacher = new URLSearchParams(location.search).has("teacher");
 
@@ -237,10 +234,9 @@ if (isTeacher) {
 }
 
 function updateStats() {
-  const wrong = totalAttempts - correctCount;
   correctEl.textContent = correctCount;
-  wrongEl.textContent = wrong;
-  totalEl.textContent = totalAttempts;
+  wrongEl.textContent = wrongCount;
+  totalEl.textContent = correctCount + wrongCount;
 }
 
 function shuffle(arr) {
@@ -256,15 +252,13 @@ function speak(text) {
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";
-  u.rate = 0.9;
+  u.rate = 0.85;
   speechSynthesis.speak(u);
 }
 
 function nextWord() {
   if (words.length === 0) {
-    wordDisplay.textContent = "—";
-    wordDisplay.classList.remove("hidden");
-    hint.textContent = "Слова ещё не добавлены.";
+    hint.textContent = "Нет слов.";
     currentWord = "";
     return;
   }
@@ -290,35 +284,39 @@ function nextWord() {
   input.focus();
 }
 
+function normalize(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 function check() {
-  const typed = input.value.trim().toLowerCase();
-  if (!currentWord) return;
-  totalAttempts++;
-  updateStats();
-  if (typed === currentWord.toLowerCase()) {
+  const typed = normalize(input.value);
+  if (!currentWord || !typed) return;
+
+  const isCorrect = typed === normalize(currentWord);
+
+  if (isCorrect) {
     correctCount++;
-    updateStats();
     input.className = "correct";
     feedback.textContent = "Верно!";
     feedback.className = "feedback good";
-    setTimeout(nextWord, 700);
+    updateStats();
+    setTimeout(nextWord, 600);
   } else {
+    wrongCount++;
     input.className = "wrong";
     feedback.textContent = "Неверно. Правильно: " + currentWord;
     feedback.className = "feedback bad";
     wordDisplay.textContent = currentWord;
     wordDisplay.classList.remove("hidden");
-    setTimeout(() => {
-      nextWord();
-    }, 1800);
+    updateStats();
+    setTimeout(nextWord, 1600);
   }
 }
 
 function showResults() {
-  const wrong = totalAttempts - correctCount;
   resCorrect.textContent = correctCount;
-  resWrong.textContent = wrong;
-  resTotal.textContent = totalAttempts;
+  resWrong.textContent = wrongCount;
+  resTotal.textContent = correctCount + wrongCount;
   results.style.display = "block";
   input.disabled = true;
 }
@@ -331,11 +329,11 @@ function hideResults() {
 
 function resetAll() {
   correctCount = 0;
-  totalAttempts = 0;
+  wrongCount = 0;
   currentIndex = 0;
   updateStats();
   hideResults();
-  if (words.length) shuffle(words);
+  shuffle(words);
   nextWord();
 }
 
@@ -350,7 +348,9 @@ document.getElementById("replay").addEventListener("click", () => {
   if (currentWord) speak(currentWord);
 });
 
-document.getElementById("skip").addEventListener("click", nextWord);
+document.getElementById("skip").addEventListener("click", () => {
+  nextWord();
+});
 
 document.getElementById("checkBtn").addEventListener("click", showResults);
 
@@ -360,10 +360,11 @@ document.getElementById("resetBtn").addEventListener("click", resetAll);
 
 document.getElementById("saveWords").addEventListener("click", () => {
   const lines = wordList.value.split("\n").map(s => s.trim()).filter(Boolean);
-  words = lines;
-  localStorage.setItem("typingWords", JSON.stringify(words));
-  resetAll();
-  alert("Слова сохранены.");
+  if (lines.length) {
+    words = lines;
+    resetAll();
+    alert("Слова сохранены.");
+  }
 });
 
 document.getElementById("hideTeacher").addEventListener("click", () => {
@@ -394,21 +395,21 @@ rows.forEach(row => {
 function highlightKey(key) {
   const k = key.toLowerCase();
   document.querySelectorAll(".key").forEach(el => {
-    if (el.dataset.key === k || (k === " " && el.textContent === "space")) {
+    if (el.dataset.key === k) {
       el.classList.add("active");
-      setTimeout(() => el.classList.remove("active"), 120);
+      setTimeout(() => el.classList.remove("active"), 100);
     }
   });
 }
 
 input.addEventListener("input", () => {
   const last = input.value.slice(-1);
-  if (last) highlightKey(last);
+  if (last && last !== " ") highlightKey(last);
 });
 
 // Старт
 updateStats();
-if (words.length) shuffle(words);
+shuffle(words);
 nextWord();
 </script>
 </body>
