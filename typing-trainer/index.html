@@ -207,8 +207,9 @@ const DEFAULT_WORDS = [
   "watch a film"
 ];
 
-// Если в localStorage есть свои слова — используем их, иначе стандартный набор
-let words = JSON.parse(localStorage.getItem("typingWords") || "null") || DEFAULT_WORDS.slice();
+// Принудительно используем новый список (старый localStorage игнорируем)
+localStorage.removeItem("typingWords");
+let words = DEFAULT_WORDS.slice();
 
 let currentIndex = 0;
 let correctCount = 0;
@@ -229,7 +230,6 @@ const results = document.getElementById("results");
 const resCorrect = document.getElementById("resCorrect");
 const resWrong = document.getElementById("resWrong");
 const resTotal = document.getElementById("resTotal");
-const introVideo = document.getElementById("introVideo");
 
 if (isTeacher) {
   teacherPanel.style.display = "block";
