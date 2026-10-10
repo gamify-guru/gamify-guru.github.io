@@ -121,6 +121,18 @@
   .feedback { margin-top: 12px; font-size: 0.95rem; min-height: 1.4em; }
   .feedback.good { color: #3fb950; }
   .feedback.bad { color: #f85149; }
+  .results {
+    margin-top: 18px;
+    padding: 16px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    display: none;
+  }
+  .results h3 { margin-bottom: 10px; font-size: 1.05rem; }
+  .results p { margin: 6px 0; font-size: 1rem; }
+  .results .good { color: #3fb950; font-weight: 600; }
+  .results .bad { color: #f85149; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -133,11 +145,22 @@
     <input id="input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="печатай здесь" autofocus>
     <div class="feedback" id="feedback"></div>
     <div class="stats">
-      Правильно: <span id="correct">0</span> &nbsp;|&nbsp; Всего: <span id="total">0</span>
+      Правильно: <span id="correct">0</span> &nbsp;|&nbsp; Неправильно: <span id="wrong">0</span> &nbsp;|&nbsp; Всего: <span id="total">0</span>
     </div>
     <div style="margin-top:14px">
       <button id="replay">🔊 Повторить слово</button>
       <button id="skip">Пропустить</button>
+      <button id="checkBtn" class="primary">Проверить</button>
+    </div>
+    <div class="results" id="results">
+      <h3>Результат</h3>
+      <p>Правильно: <span class="good" id="resCorrect">0</span></p>
+      <p>Неправильно: <span class="bad" id="resWrong">0</span></p>
+      <p>Всего попыток: <span id="resTotal">0</span></p>
+      <div style="margin-top:12px">
+        <button id="continueBtn">Продолжить</button>
+        <button id="resetBtn">Начать снова</button>
+      </div>
     </div>
   </div>
 
@@ -155,12 +178,8 @@
 
 <script>
 // === БАНК СЛОВ ===
-// Учитель: вставь сюда свои слова (или используй панель учителя в режиме ?teacher)
-// Пример:
-// const DEFAULT_WORDS = ["cat", "dog", "house", "school"];
 const DEFAULT_WORDS = [];
 
-// Загружаем из localStorage, если есть
 let words = JSON.parse(localStorage.getItem("typingWords") || "null") || DEFAULT_WORDS.slice();
 
 let currentIndex = 0;
@@ -173,14 +192,26 @@ const input = document.getElementById("input");
 const wordDisplay = document.getElementById("wordDisplay");
 const feedback = document.getElementById("feedback");
 const correctEl = document.getElementById("correct");
+const wrongEl = document.getElementById("wrong");
 const totalEl = document.getElementById("total");
 const hint = document.getElementById("hint");
 const teacherPanel = document.getElementById("teacherPanel");
 const wordList = document.getElementById("wordList");
+const results = document.getElementById("results");
+const resCorrect = document.getElementById("resCorrect");
+const resWrong = document.getElementById("resWrong");
+const resTotal = document.getElementById("resTotal");
 
 if (isTeacher) {
   teacherPanel.style.display = "block";
   wordList.value = words.join("\n");
+}
+
+function updateStats() {
+  const wrong = totalAttempts - correctCount;
+  correctEl.textContent = correctCount;
+  wrongEl.textContent = wrong;
+  totalEl.textContent = totalAttempts;
 }
 
 function shuffle(arr) {
@@ -235,10 +266,10 @@ function check() {
   const typed = input.value.trim().toLowerCase();
   if (!currentWord) return;
   totalAttempts++;
-  totalEl.textContent = totalAttempts;
+  updateStats();
   if (typed === currentWord.toLowerCase()) {
     correctCount++;
-    correctEl.textContent = correctCount;
+    updateStats();
     input.className = "correct";
     feedback.textContent = "Верно!";
     feedback.className = "feedback good";
@@ -255,6 +286,31 @@ function check() {
   }
 }
 
+function showResults() {
+  const wrong = totalAttempts - correctCount;
+  resCorrect.textContent = correctCount;
+  resWrong.textContent = wrong;
+  resTotal.textContent = totalAttempts;
+  results.style.display = "block";
+  input.disabled = true;
+}
+
+function hideResults() {
+  results.style.display = "none";
+  input.disabled = false;
+  input.focus();
+}
+
+function resetAll() {
+  correctCount = 0;
+  totalAttempts = 0;
+  currentIndex = 0;
+  updateStats();
+  hideResults();
+  if (words.length) shuffle(words);
+  nextWord();
+}
+
 input.addEventListener("keydown", e => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -268,17 +324,18 @@ document.getElementById("replay").addEventListener("click", () => {
 
 document.getElementById("skip").addEventListener("click", nextWord);
 
+document.getElementById("checkBtn").addEventListener("click", showResults);
+
+document.getElementById("continueBtn").addEventListener("click", hideResults);
+
+document.getElementById("resetBtn").addEventListener("click", resetAll);
+
 document.getElementById("saveWords").addEventListener("click", () => {
   const lines = wordList.value.split("\n").map(s => s.trim()).filter(Boolean);
   words = lines;
   localStorage.setItem("typingWords", JSON.stringify(words));
-  currentIndex = 0;
-  correctCount = 0;
-  totalAttempts = 0;
-  correctEl.textContent = "0";
-  totalEl.textContent = "0";
-  alert("Слова сохранены. Теперь ученик услышит их на этой же ссылке (в этом браузере).");
-  nextWord();
+  resetAll();
+  alert("Слова сохранены.");
 });
 
 document.getElementById("hideTeacher").addEventListener("click", () => {
@@ -322,6 +379,7 @@ input.addEventListener("input", () => {
 });
 
 // Старт
+updateStats();
 if (words.length) shuffle(words);
 nextWord();
 </script>
