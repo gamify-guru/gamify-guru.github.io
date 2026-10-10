@@ -17,7 +17,17 @@
     padding: 24px 16px 40px;
   }
   h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.02em; }
-  .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 28px; text-align: center; }
+  .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 20px; text-align: center; }
+  .video-wrap {
+    width: 100%;
+    max-width: 520px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid #30363d;
+  }
+  video { width: 100%; display: block; }
   .card {
     background: #161b22;
     border: 1px solid #30363d;
@@ -139,6 +149,12 @@
   <h1>Word Typing</h1>
   <p class="subtitle">Слушай слово и напечатай его</p>
 
+  <div class="video-wrap">
+    <video id="introVideo" controls preload="metadata">
+      <source src="words-video.mp4" type="video/mp4">
+    </video>
+  </div>
+
   <div class="card">
     <div id="wordDisplay" class="hidden">—</div>
     <p class="hint" id="hint">Нажми «Повторить», чтобы услышать слово</p>
@@ -177,9 +193,21 @@
   </div>
 
 <script>
-// === БАНК СЛОВ ===
-const DEFAULT_WORDS = [];
+// === БАНК СЛОВ (не видны ученице) ===
+const DEFAULT_WORDS = [
+  "clean",
+  "dust",
+  "make the bed",
+  "sweep the floor",
+  "tidy up",
+  "wash up",
+  "play chess",
+  "play computer games",
+  "read a comic",
+  "watch a film"
+];
 
+// Если в localStorage есть свои слова — используем их, иначе стандартный набор
 let words = JSON.parse(localStorage.getItem("typingWords") || "null") || DEFAULT_WORDS.slice();
 
 let currentIndex = 0;
@@ -201,6 +229,7 @@ const results = document.getElementById("results");
 const resCorrect = document.getElementById("resCorrect");
 const resWrong = document.getElementById("resWrong");
 const resTotal = document.getElementById("resTotal");
+const introVideo = document.getElementById("introVideo");
 
 if (isTeacher) {
   teacherPanel.style.display = "block";
@@ -235,7 +264,7 @@ function nextWord() {
   if (words.length === 0) {
     wordDisplay.textContent = "—";
     wordDisplay.classList.remove("hidden");
-    hint.textContent = "Слова ещё не добавлены. Открой ссылку с ?teacher и добавь слова.";
+    hint.textContent = "Слова ещё не добавлены.";
     currentWord = "";
     return;
   }
@@ -254,7 +283,6 @@ function nextWord() {
     wordDisplay.classList.remove("hidden");
     hint.textContent = "Режим учителя: слово видно";
   } else {
-    wordDisplay.textContent = "•".repeat(Math.min(currentWord.length, 8));
     wordDisplay.classList.add("hidden");
     hint.textContent = "Слушай и печатай";
   }
