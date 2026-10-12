@@ -1,1 +1,102 @@
-FILE_CONTENT_WILL_BE_REPLACED
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Case of the Silent Night — Homework</title>
+<style>
+:root { --cream:#faf6f0; --warm:#734820; --orange:#d97f33; --green:#3d6650; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:system-ui,sans-serif; background:var(--cream); color:#333; }
+header { background:var(--warm); color:white; text-align:center; padding:1rem; }
+.container { max-width:800px; margin:0 auto; padding:1rem; }
+.hero { width:100%; border-radius:12px; margin:1rem 0; }
+.rules-btn { position:fixed; bottom:16px; right:16px; background:var(--orange); color:white; border:none; border-radius:40px; padding:10px 18px; font-weight:600; cursor:pointer; z-index:100; }
+.rules-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; align-items:center; justify-content:center; }
+.rules-modal.open { display:flex; }
+.rules-card { background:#fff; border-radius:14px; padding:1.4rem; max-width:500px; }
+.task { background:#fff; border-radius:10px; padding:1rem; margin:1rem 0; border-left:4px solid var(--green); }
+input, textarea { width:100%; padding:7px; border:1.5px solid #ddd; border-radius:6px; margin:4px 0; }
+button.check { background:var(--green); color:#fff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; }
+.ok { color:green; } .bad { color:red; }
+.progress { text-align:center; font-weight:600; color:var(--warm); }
+</style>
+</head>
+<body>
+<header><h1>The Case of the Silent Night</h1><p>Homework • Past Simple</p></header>
+<div class="container">
+  <img class="hero" src="https://i.imgur.com/placeholder.jpg" alt="Illustration" style="display:none">
+  <div class="progress" id="progress">Evidence collected: 0 / 4</div>
+  <div class="task" id="task1">
+    <h3>Task 1. Complete the sentences</h3>
+    <div>1. Yesterday Grandpa <input data-answer="practiced|practised"> the drums. <span class="feedback"></span></div>
+    <div>2. Mum <input data-answer="washed"> the cups. <span class="feedback"></span></div>
+    <div>3. We <input data-answer="listened"> to music. <span class="feedback"></span></div>
+    <div>4. Dad <input data-answer="opened"> the window. <span class="feedback"></span></div>
+    <div>5. My sister <input data-answer="painted"> a picture. <span class="feedback"></span></div>
+    <div>6. The cat <input data-answer="jumped"> and <input data-answer="watched"> us. <span class="feedback"></span></div>
+    <button class="check" onclick="checkTask(1)">Check</button>
+  </div>
+  <div class="task" id="task2">
+    <h3>Task 2. Make negative</h3>
+    <div>1. Grandpa played the violin. → <input data-answer="grandpa didn't play the violin|he didn't play the violin"> <span class="feedback"></span></div>
+    <div>2. Mum cooked fish. → <input data-answer="mum didn't cook fish|she didn't cook fish"> <span class="feedback"></span></div>
+    <div>3. We watched a film. → <input data-answer="we didn't watch a film"> <span class="feedback"></span></div>
+    <div>4. Dad cleaned the garage. → <input data-answer="dad didn't clean the garage|he didn't clean the garage"> <span class="feedback"></span></div>
+    <div>5. My brother danced. → <input data-answer="my brother didn't dance|he didn't dance"> <span class="feedback"></span></div>
+    <div>6. They visited the zoo. → <input data-answer="they didn't visit the zoo"> <span class="feedback"></span></div>
+    <button class="check" onclick="checkTask(2)">Check</button>
+  </div>
+  <div class="task" id="task3">
+    <h3>Task 3. Write questions</h3>
+    <div>1. you / help / Mum / yesterday? → <input data-answer="did you help mum yesterday?"> <span class="feedback"></span></div>
+    <div>2. Grandpa / practice / the drums? → <input data-answer="did grandpa practice the drums?|did grandpa practise the drums?"> <span class="feedback"></span></div>
+    <div>3. they / stay / at home? → <input data-answer="did they stay at home?"> <span class="feedback"></span></div>
+    <div>4. she / call / her friend? → <input data-answer="did she call her friend?"> <span class="feedback"></span></div>
+    <div>5. Dad / walk / the dog? → <input data-answer="did dad walk the dog?"> <span class="feedback"></span></div>
+    <div>6. you / like / the concert? → <input data-answer="did you like the concert?"> <span class="feedback"></span></div>
+    <button class="check" onclick="checkTask(3)">Check</button>
+  </div>
+  <div class="task" id="task4">
+    <h3>Task 4. Your own report</h3>
+    <textarea id="ownReport" placeholder="Yesterday I..."></textarea>
+    <button class="check" onclick="checkTask(4)">Save</button>
+    <div class="feedback" id="task4fb"></div>
+  </div>
+</div>
+<button class="rules-btn" onclick="document.getElementById('rm').classList.add('open')">Rules</button>
+<div class="rules-modal" id="rm" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="rules-card">
+    <h2>Grammar Rules</h2>
+    <p><b>Affirmative:</b> verb + ed</p>
+    <p><b>Negative:</b> didn’t + base verb</p>
+    <p><b>Questions:</b> Did + subject + base verb?</p>
+    <button class="check" onclick="document.getElementById('rm').classList.remove('open')">Close</button>
+  </div>
+</div>
+<script>
+let ev=0, done={1:0,2:0,3:0,4:0};
+function n(s){return (s||'').toLowerCase().trim().replace(/[.!?]/g,'').replace(/\s+/g,' ');}
+function checkTask(t){
+  let ok=0, inputs=document.querySelectorAll('#task'+t+' input[data-answer]');
+  inputs.forEach(i=>{
+    let a=i.dataset.answer.split('|').map(n), v=n(i.value), f=i.nextElementSibling;
+    if(a.includes(v)){ok++; f.textContent='✓'; f.className='feedback ok';}
+    else{f.textContent='✗'; f.className='feedback bad';}
+  });
+  if(t===4){
+    let txt=document.getElementById('ownReport').value.trim();
+    let fb=document.getElementById('task4fb');
+    if(txt.split(/[.!?]/).filter(x=>x.trim().length>4).length>=5){
+      fb.textContent='✓ Saved!'; fb.className='feedback ok'; ok=1;
+    } else { fb.textContent='Write more'; fb.className='feedback bad'; return; }
+  }
+  if(ok===(t===4?1:inputs.length) && !done[t]){
+    done[t]=1; ev++;
+    document.getElementById('progress').textContent='Evidence collected: '+ev+' / 4';
+    if(ev===4) setTimeout(()=>alert('Case closed!'),200);
+  }
+}
+</script>
+</body>
+</html>
