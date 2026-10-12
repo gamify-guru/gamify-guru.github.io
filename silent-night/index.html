@@ -1,1 +1,267 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Case of the Silent Night — Homework</title>
+<style>
+:root {
+  --cream: #faf6f0;
+  --warm: #734820;
+  --orange: #d97f33;
+  --green: #3d6650;
+  --light-orange: #fff3e6;
+  --soft: #e8f0e8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--cream);
+  color: #333;
+  line-height: 1.5;
+}
+header {
+  background: var(--warm);
+  color: white;
+  text-align: center;
+  padding: 1.2rem 1rem 0.8rem;
+}
+header h1 { margin: 0; font-size: 1.6rem; }
+header p { margin: 0.3rem 0 0; opacity: 0.9; font-size: 0.95rem; }
+.container { max-width: 820px; margin: 0 auto; padding: 1.2rem; }
+.hero-placeholder {
+  background: linear-gradient(135deg, #734820, #d97f33);
+  height: 160px;
+  border-radius: 12px;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.15rem;
+  text-align: center;
+  padding: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.rules-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--orange);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(217,127,51,0.4);
+  z-index: 100;
+}
+.rules-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.rules-modal.open { display: flex; }
+.rules-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 520px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-top: 6px solid var(--orange);
+}
+.rules-card h2 { margin-top: 0; color: var(--warm); }
+.task {
+  background: white;
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  margin: 1.2rem 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-left: 5px solid var(--green);
+}
+.task h3 { margin: 0 0 0.6rem; color: var(--green); }
+.item { margin: 0.7rem 0; }
+input[type="text"], textarea {
+  width: 100%;
+  max-width: 420px;
+  padding: 8px 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+textarea { max-width: 100%; min-height: 140px; }
+button.check {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 8px;
+}
+button.check:hover { filter: brightness(1.1); }
+.feedback { margin-top: 6px; font-size: 0.92rem; min-height: 1.2em; }
+.ok { color: #2d7a3a; }
+.bad { color: #c0392b; }
+.progress {
+  text-align: center;
+  margin: 1rem 0;
+  font-weight: 600;
+  color: var(--warm);
+}
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #777;
+  font-size: 0.85rem;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Case of the Silent Night</h1>
+  <p>Homework • Past Simple of Regular Verbs</p>
+</header>
+
+<div class="container">
+  <div class="hero-placeholder">The Case of the Silent Night<br><small>Detective on the case</small></div>
+
+  <div class="progress" id="progress">Evidence collected: 0 / 4</div>
+
+  <div class="task" id="task1">
+    <h3>Task 1. Complete the sentences</h3>
+    <p>Write the correct Past Simple form.</p>
+    <div class="item">1. Yesterday Grandpa <input type="text" data-answer="practiced|practised" placeholder="practice"> the drums for one hour. <span class="feedback"></span></div>
+    <div class="item">2. Mum <input type="text" data-answer="washed" placeholder="wash"> the cups after dinner. <span class="feedback"></span></div>
+    <div class="item">3. We <input type="text" data-answer="listened" placeholder="listen"> to music in the living room. <span class="feedback"></span></div>
+    <div class="item">4. Dad <input type="text" data-answer="opened" placeholder="open"> the window because it was hot. <span class="feedback"></span></div>
+    <div class="item">5. My sister <input type="text" data-answer="painted" placeholder="paint"> a picture of the drums. <span class="feedback"></span></div>
+    <div class="item">6. The cat <input type="text" data-answer="jumped" placeholder="jump"> on the sofa and <input type="text" data-answer="watched" placeholder="watch"> us. <span class="feedback"></span></div>
+    <button class="check" onclick="checkTask(1)">Check Task 1</button>
+  </div>
+
+  <div class="task" id="task2">
+    <h3>Task 2. Make the sentences negative</h3>
+    <p>Rewrite in the negative form (didn’t + base verb).</p>
+    <div class="item">1. Grandpa played the violin. → <input type="text" data-answer="grandpa didn't play the violin|he didn't play the violin" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">2. Mum cooked fish. → <input type="text" data-answer="mum didn't cook fish|she didn't cook fish" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">3. We watched a film. → <input type="text" data-answer="we didn't watch a film" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">4. Dad cleaned the garage. → <input type="text" data-answer="dad didn't clean the garage|he didn't clean the garage" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">5. My brother danced in the kitchen. → <input type="text" data-answer="my brother didn't dance in the kitchen|he didn't dance in the kitchen" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">6. They visited the zoo. → <input type="text" data-answer="they didn't visit the zoo" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">7. She carried the big bag. → <input type="text" data-answer="she didn't carry the big bag" style="max-width:100%"> <span class="feedback"></span></div>
+    <button class="check" onclick="checkTask(2)">Check Task 2</button>
+  </div>
+
+  <div class="task" id="task3">
+    <h3>Task 3. Write questions</h3>
+    <p>Make questions from the words.</p>
+    <div class="item">1. you / help / Mum / yesterday? → <input type="text" data-answer="did you help mum yesterday?" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">2. Grandpa / practice / the drums / last night? → <input type="text" data-answer="did grandpa practice the drums last night?|did grandpa practise the drums last night?" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">3. they / stay / at home / last weekend? → <input type="text" data-answer="did they stay at home last weekend?" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">4. she / call / her friend / after school? → <input type="text" data-answer="did she call her friend after school?" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">5. Dad / walk / the dog / this morning? → <input type="text" data-answer="did dad walk the dog this morning?" style="max-width:100%"> <span class="feedback"></span></div>
+    <div class="item">6. you / like / the concert? → <input type="text" data-answer="did you like the concert?" style="max-width:100%"> <span class="feedback"></span></div>
+    <button class="check" onclick="checkTask(3)">Check Task 3</button>
+  </div>
+
+  <div class="task" id="task4">
+    <h3>Task 4. Your own report</h3>
+    <p>Write about <b>your</b> yesterday (6–8 sentences). Use Past Simple of regular verbs.</p>
+    <textarea id="ownReport" placeholder="Yesterday I..."></textarea>
+    <button class="check" onclick="checkTask(4)">Save my report</button>
+    <div class="feedback" id="task4fb"></div>
+  </div>
+
+  <footer>
+    Academy Stars 3 • Unit 5 Lesson 4 • Case closed when you finish all tasks
+  </footer>
+</div>
+
+<button class="rules-btn" onclick="openRules()">Rules</button>
+
+<div class="rules-modal" id="rulesModal" onclick="if(event.target===this)closeRules()">
+  <div class="rules-card">
+    <h2>Grammar Rules</h2>
+    <p><b>1. Affirmative</b><br>verb + <b>ed</b><br>
+    play → played &nbsp; visit → visited &nbsp; tidy → tidied<br>
+    carry → carried &nbsp; stop → stopped</p>
+    <p><b>2. Negative</b><br><b>didn’t</b> + verb (base form)<br>
+    He didn’t play the drums.<br>She didn’t visit Grandma.</p>
+    <p><b>3. Questions</b><br><b>Did</b> + subject + verb (base form)?<br>
+    Did you watch TV?<br>Did Mum cook dinner?</p>
+    <p><b>Time words:</b> yesterday, last night, last weekend, ago</p>
+    <button class="check" onclick="closeRules()">Close</button>
+  </div>
+</div>
+
+<script>
+let evidence = 0;
+const done = {1:false, 2:false, 3:false, 4:false};
+
+function normalize(s) {
+  return (s || '').toLowerCase().trim().replace(/[.!?]/g, '').replace(/\s+/g, ' ');
+}
+
+function checkTask(n) {
+  const task = document.getElementById('task' + n);
+  const inputs = task.querySelectorAll('input[data-answer]');
+  let correct = 0;
+  inputs.forEach(inp => {
+    const answers = inp.dataset.answer.split('|').map(a => normalize(a));
+    const val = normalize(inp.value);
+    const fb = inp.nextElementSibling;
+    if (answers.includes(val)) {
+      correct++;
+      fb.textContent = '✓';
+      fb.className = 'feedback ok';
+      inp.style.borderColor = '#2d7a3a';
+    } else {
+      fb.textContent = '✗ try again';
+      fb.className = 'feedback bad';
+      inp.style.borderColor = '#c0392b';
+    }
+  });
+
+  if (n === 4) {
+    const txt = document.getElementById('ownReport').value.trim();
+    const fb = document.getElementById('task4fb');
+    if (txt.split(/[.!?]/).filter(s => s.trim().length > 5).length >= 5) {
+      fb.textContent = '✓ Report saved! Great work, Detective.';
+      fb.className = 'feedback ok';
+      correct = 1;
+    } else {
+      fb.textContent = 'Write at least 6 sentences about your yesterday.';
+      fb.className = 'feedback bad';
+      return;
+    }
+  }
+
+  const total = n === 4 ? 1 : inputs.length;
+  if (correct === total && !done[n]) {
+    done[n] = true;
+    evidence++;
+    document.getElementById('progress').textContent = `Evidence collected: ${evidence} / 4`;
+    if (evidence === 4) {
+      setTimeout(() => alert('Case closed! All evidence collected. Well done, Detective!'), 300);
+    }
+  }
+}
+
+function openRules() { document.getElementById('rulesModal').classList.add('open'); }
+function closeRules() { document.getElementById('rulesModal').classList.remove('open'); }
+</script>
+</body>
+</html>
